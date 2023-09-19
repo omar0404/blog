@@ -22,8 +22,7 @@ export const postRouter = createTRPCRouter({
     })
 
   }),
-  create:privateProcedure.input(z.object({content:z.string().min(0).max(100)})).mutation(async({ctx,input})=>{
-
+  create:privateProcedure.input(z.object({content:z.string().min(1).max(100)})).mutation(async({ctx,input})=>{
 
     await ctx.prisma.post.create({
       data:{

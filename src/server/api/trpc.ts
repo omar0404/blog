@@ -11,9 +11,19 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { authMiddleware, getAuth } from "@clerk/nextjs/server";
-
+import {  getAuth } from "@clerk/nextjs/server";
 import { prisma } from "~/server/db";
+
+import {Ratelimit} from "@upstash/ratelimit";
+import {Redis} from "@upstash/redis";
+const redis = new Redis({
+  url: "https://us1-sound-quail-40129.upstash.io",
+  token: "AZzBACQgYzJlYWY5MTUtOTVlMi00N2I4LTlkYjMtODE5OTdjZDhiNTRmZTQ1NDI4YzU1NzZjNGM4ZWIwYTIzNmZlMzE5YjA3NWY=",
+});
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.fixedWindow(1, "5 s"),
+});
 
 /**
  * 1. CONTEXT
@@ -31,9 +41,10 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: CreateNextContextOptions) => {
+export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const {req} = opts
   const {userId} = getAuth(req)
+
 
   return {
     prisma,
@@ -84,8 +95,18 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure;
-export const privateProcedure = t.procedure.use(t.middleware(async ({ctx,next}) => {
+
+
+const rateLimitMiddleware = t.middleware(async ({ctx,next})=> {
+  if(ctx.userId){
+    const {success} = await ratelimit.limit(ctx.userId);
+    if(!success)
+      throw new TRPCError({code:"TOO_MANY_REQUESTS"})
+  }
+  return next({ctx})
+})
+
+const authMiddleware = t.middleware(async ({ctx,next}) => {
   if (!ctx.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -95,4 +116,7 @@ export const privateProcedure = t.procedure.use(t.middleware(async ({ctx,next}) 
     ...ctx,
     userId:ctx.userId
   }})
-}));
+})
+
+export const publicProcedure = t.procedure;
+export const privateProcedure = t.procedure.use(rateLimitMiddleware).use(authMiddleware);
