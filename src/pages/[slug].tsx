@@ -1,5 +1,6 @@
 import { clerkClient, useClerk } from "@clerk/nextjs";
 import { User } from "@clerk/nextjs/dist/types/server";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -18,6 +19,9 @@ const Profile = () => {
   if (!user) return <div />;
   return (
     <div>
+      <Head>
+        <title>{user.username}</title>
+      </Head>
       <div className="  h-40 bg-slate-500" />
       <div className="ml-5">
         <Image
