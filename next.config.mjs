@@ -17,6 +17,12 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "img.clerk.dev",
+    },
+  ],
   images: {
     domains: ["img.clerk.dev"],
   },
