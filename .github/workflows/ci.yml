@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  DATABASE_URL: ${{ vars.DATABASE_URL }}
+  DATABASE_URL: ${{ context.secrets.DATABASE_URL }}
 
 jobs:
   build:
