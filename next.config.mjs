@@ -19,8 +19,6 @@ const config = {
   },
   images: {
     domains: ["*"],
-    loader: "custom",
-    path: "/",
   },
   output: "standalone",
 };
