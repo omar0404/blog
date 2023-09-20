@@ -10,7 +10,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <main className="flex h-screen flex-col">
       <Toaster />
-      <div className="align- border-stale-400 flex w-full flex-1 flex-col self-center border-x md:max-w-2xl">
+      <div className="align- flex w-full flex-1 flex-col self-center border-x border-slate-400 md:max-w-2xl">
         <ClerkProvider {...pageProps}>
           <Component {...pageProps} />
         </ClerkProvider>
