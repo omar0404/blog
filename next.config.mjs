@@ -20,6 +20,7 @@ const config = {
   images: {
     domains: ["*"],
   },
+  output: "standalone",
 };
 
 export default config;
