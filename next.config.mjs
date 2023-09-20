@@ -20,11 +20,11 @@ const config = {
   remotePatterns: [
     {
       protocol: "https",
-      hostname: "img.clerk.dev",
+      hostname: "img.clerk.com",
     },
   ],
   images: {
-    domains: ["img.clerk.dev"],
+    domains: ["img.clerk.com"],
   },
 };
 
