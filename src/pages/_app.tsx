@@ -7,10 +7,16 @@ import "~/styles/globals.css";
 import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  return <ClerkProvider {...pageProps}>
-  <Toaster />
-  <Component {...pageProps} />
-  </ClerkProvider>;
+  return (
+    <main className="flex h-screen flex-col">
+      <Toaster />
+      <div className="align- border-stale-400 flex w-full flex-1 flex-col self-center border-x md:max-w-2xl">
+        <ClerkProvider {...pageProps}>
+          <Component {...pageProps} />
+        </ClerkProvider>
+      </div>
+    </main>
+  );
 };
 
 export default api.withTRPC(MyApp);

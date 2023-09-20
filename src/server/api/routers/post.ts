@@ -5,9 +5,11 @@ import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: publicProcedure.input(z.object({userId:z.string().optional()})).query(async ({ ctx,input }) => {
 
-    const posts = await ctx.prisma.post.findMany({orderBy:{'createdAt':'desc'}});
+    const where = !input.userId ? {} : {authorId:input.userId}
+
+    const posts = await ctx.prisma.post.findMany({orderBy:{'createdAt':'desc'},where:where});
     const users = await clerkClient.users.getUserList({userId:posts.map(post => post.authorId)})
 
     return posts.map(post => {
