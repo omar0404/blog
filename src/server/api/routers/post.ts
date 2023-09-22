@@ -24,13 +24,16 @@ export const postRouter = createTRPCRouter({
         throw new TRPCError({message:'author is found',code:"INTERNAL_SERVER_ERROR"})
       return {
           ...post,
-          author:user
+          author: {
+            id:user.id,
+            username:user.username,
+            imageUrl:user.imageUrl
+          }
       }
     })
 
   }),
   create:privateProcedure.input(z.object({content:z.string().min(1).max(100)})).mutation(async({ctx,input})=>{
-
     await ctx.prisma.post.create({
       data:{
       authorId:ctx.userId,

@@ -8,16 +8,35 @@ const CreatePost = () => {
   const [value, setValue] = useState("");
   const { user } = useUser();
   const ctx = api.useContext();
+
+  if (!user) return <div />;
+
   const { mutate, isLoading } = api.post.create.useMutation({
+    onMutate() {
+      const prevPosts = ctx.post.getAll.getData({});
+      ctx.post.getAll.setData({}, (cachedData) => {
+        return [
+          {
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            id: "-999",
+            content: value,
+            authorId: user.id,
+            author: user,
+          },
+          ...(cachedData || []),
+        ];
+      });
+      return { prevPosts };
+    },
     onSuccess() {
       setValue("");
-      ctx.post.getAll.invalidate();
     },
-    onError() {
+    onError(_, __, context: any) {
       toast.error("Failed to post !");
+      ctx.post.getAll.setData({}, context.prevPosts);
     },
   });
-  if (!user) return <div />;
   return (
     <div className="flex flex-1 items-center border-b border-slate-400 p-6">
       <Image
