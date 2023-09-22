@@ -11,6 +11,6 @@ Simple blog post created with:
 - tRPC
 - react-query
 - typescript 
-
+- Github workflows
 
 
